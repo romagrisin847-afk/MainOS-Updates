@@ -1,0 +1,319 @@
+// Конфигурация
+const CONFIG = {
+    currentVersion: "26.7",
+    googleDriveFolder: "1Ny-0ZSp0z1u96j_jwGNfinnpD4AWd3as",
+    githubRepo: "romagrisin847-afk/MainOS-Updates",
+    updateCheckInterval: 300000 // 5 минут
+};
+
+// Состояние
+let state = {
+    isChecking: false,
+    lastCheck: null,
+    bypassMode: false
+};
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    initApp();
+    setupEventListeners();
+    loadFromStorage();
+    
+    // Первая проверка через 2 секунды
+    setTimeout(() => {
+        simulateUpdateCheck();
+    }, 2000);
+});
+
+// Основная инициализация
+function initApp() {
+    // Установить текущую версию
+    document.getElementById('currentVersion').textContent = CONFIG.currentVersion;
+    
+    // Показать приветственное сообщение
+    showNotification('MainOS Update Panel', 'Система инициализирована', 'info');
+    
+    // Начать авто-проверку
+    setInterval(() => {
+        if (!state.isChecking) {
+            simulateUpdateCheck();
+        }
+    }, CONFIG.updateCheckInterval);
+}
+
+// Настройка обработчиков
+function setupEventListeners() {
+    // Кнопка проверки
+    document.getElementById('checkBtn').addEventListener('click', simulateUpdateCheck);
+    
+    // Кнопка скачивания
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        window.open(`https://drive.google.com/drive/folders/${CONFIG.googleDriveFolder}`, '_blank');
+        showNotification('Google Drive', 'Открыта папка с обновлениями', 'info');
+        this.innerHTML = '<i class="fas fa-check"></i> Открыто';
+        this.disabled = true;
+        setTimeout(() => {
+            this.innerHTML = '<i class="fas fa-download"></i> Download Update';
+            this.disabled = false;
+        }, 3000);
+    });
+    
+    // Дополнительные кнопки
+    document.getElementById('manualBtn').addEventListener('click', () => {
+        showNotification('Ручная установка', 'Введите номер версии вручную', 'info');
+    });
+    
+    document.getElementById('bypassBtn').addEventListener('click', toggleBypass);
+    
+    document.getElementById('folderBtn').addEventListener('click', () => {
+        window.open(`https://drive.google.com/drive/folders/${CONFIG.googleDriveFolder}`, '_blank');
+        showNotification('Папка', 'Google Drive открыт', 'info');
+    });
+    
+    document.getElementById('logBtn').addEventListener('click', showSystemLog);
+}
+
+// Симуляция проверки обновлений (для демо)
+async function simulateUpdateCheck() {
+    if (state.isChecking) return;
+    
+    state.isChecking = true;
+    const checkBtn = document.getElementById('checkBtn');
+    const progressBar = document.getElementById('progressBar');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusMessage = document.getElementById('statusMessage');
+    
+    // Блокируем кнопку
+    checkBtn.disabled = true;
+    checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+    
+    // Сброс прогресса
+    progressBar.style.width = '0%';
+    
+    // Этап 1: Подключение
+    statusTitle.textContent = 'Connecting...';
+    statusMessage.textContent = 'Establishing connection to servers';
+    await animateProgress(progressBar, 0, 30, 500);
+    
+    // Этап 2: Проверка сайта
+    statusTitle.textContent = 'Checking website';
+    statusMessage.textContent = 'Parsing Tilda version information';
+    await animateProgress(progressBar, 30, 60, 800);
+    
+    // Этап 3: Проверка Google Drive
+    statusTitle.textContent = 'Checking Google Drive';
+    statusMessage.textContent = 'Scanning for new versions';
+    await animateProgress(progressBar, 60, 90, 1000);
+    
+    // Этап 4: Анализ
+    statusTitle.textContent = 'Analyzing results';
+    statusMessage.textContent = 'Comparing versions...';
+    await animateProgress(progressBar, 90, 100, 500);
+    
+    // Завершение
+    setTimeout(() => {
+        // Генерируем случайные версии для демо
+        const websiteVersion = (26.7 + Math.random() * 0.5).toFixed(1);
+        const driveVersion = (26.7 + Math.random() * 0.3).toFixed(1);
+        
+        // Обновляем UI
+        updateVersionInfo(websiteVersion, driveVersion);
+        
+        // Анализируем
+        const current = parseFloat(CONFIG.currentVersion);
+        const website = parseFloat(websiteVersion);
+        const drive = parseFloat(driveVersion);
+        
+        if (drive > current) {
+            statusTitle.textContent = 'Update available!';
+            statusMessage.textContent = `Version ${driveVersion} ready to download`;
+            document.getElementById('downloadBtn').disabled = false;
+            showNotification('Обновление найдено', `Версия ${driveVersion} доступна`, 'success');
+        } else if (website > current) {
+            statusTitle.textContent = 'Beta available';
+            statusMessage.textContent = `Beta ${websiteVersion} on website`;
+            showNotification('Бета-версия', `На сайте: ${websiteVersion}`, 'info');
+        } else {
+            statusTitle.textContent = 'Up to date';
+            statusMessage.textContent = 'You have the latest version';
+            showNotification('Актуально', 'Установлена последняя версия', 'success');
+        }
+        
+        // Сохраняем время проверки
+        state.lastCheck = new Date();
+        saveToStorage();
+        updateLastCheckDisplay();
+        
+        // Разблокируем кнопку
+        checkBtn.disabled = false;
+        checkBtn.innerHTML = '<i class="fas fa-search"></i> Check Updates';
+        
+        state.isChecking = false;
+    }, 1000);
+}
+
+// Анимация прогресс-бара
+function animateProgress(progressBar, start, end, duration) {
+    return new Promise(resolve => {
+        const startTime = Date.now();
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const currentWidth = start + (end - start) * progress;
+            progressBar.style.width = currentWidth + '%';
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                resolve();
+            }
+        };
+        animate();
+    });
+}
+
+// Обновление информации о версиях
+function updateVersionInfo(website, drive) {
+    document.getElementById('websiteVersion').textContent = website;
+    document.getElementById('driveVersion').textContent = drive;
+    
+    // Подсветка новых версий
+    const current = parseFloat(CONFIG.currentVersion);
+    const websiteEl = document.getElementById('websiteVersion');
+    const driveEl = document.getElementById('driveVersion');
+    
+    websiteEl.className = 'info-value';
+    driveEl.className = 'info-value';
+    
+    if (parseFloat(website) > current) {
+        websiteEl.classList.add('new');
+    }
+    if (parseFloat(drive) > current) {
+        driveEl.classList.add('new');
+    }
+}
+
+// Переключение bypass режима
+function toggleBypass() {
+    state.bypassMode = !state.bypassMode;
+    const bypassBtn = document.getElementById('bypassBtn');
+    
+    if (state.bypassMode) {
+        bypassBtn.style.background = 'rgba(0, 122, 255, 0.2)';
+        bypassBtn.style.borderColor = 'rgba(0, 122, 255, 0.3)';
+        showNotification('Bypass Mode', 'Режим обхода активирован', 'warning');
+    } else {
+        bypassBtn.style.background = '';
+        bypassBtn.style.borderColor = '';
+        showNotification('Normal Mode', 'Обычный режим работы', 'info');
+    }
+    
+    saveToStorage();
+}
+
+// Показать системный лог
+function showSystemLog() {
+    const log = `
+    === СИСТЕМНЫЙ ЛОГ ===
+    
+    Версия: ${CONFIG.currentVersion}
+    Последняя проверка: ${state.lastCheck ? state.lastCheck.toLocaleString() : 'Никогда'}
+    Bypass режим: ${state.bypassMode ? 'Включен' : 'Выключен'}
+    GitHub репозиторий: ${CONFIG.githubRepo}
+    Google Drive папка: ${CONFIG.googleDriveFolder}
+    
+    === КОНЕЦ ЛОГА ===
+    `;
+    
+    showNotification('Системный лог', log, 'info');
+}
+
+// Уведомления
+function showNotification(title, message, type = 'info') {
+    const container = document.getElementById('notifications');
+    const notification = document.createElement('div');
+    const id = Date.now();
+    
+    const icons = {
+        info: 'fas fa-info-circle',
+        success: 'fas fa-check-circle',
+        warning: 'fas fa-exclamation-triangle',
+        error: 'fas fa-times-circle'
+    };
+    
+    notification.id = 'notification-' + id;
+    notification.className = 'notification';
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <i class="${icons[type] || 'fas fa-info-circle'}" 
+               style="color: ${type === 'success' ? '#34C759' : 
+                                 type === 'warning' ? '#FF9500' : 
+                                 type === 'error' ? '#FF3B30' : '#007AFF'};"></i>
+            <strong style="font-size: 16px;">${title}</strong>
+        </div>
+        <div style="font-size: 14px; opacity: 0.9; line-height: 1.4;">
+            ${message.replace(/\n/g, '<br>')}
+        </div>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Показать
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Авто-удаление
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+    }, 5000);
+    
+    // Клик для закрытия
+    notification.addEventListener('click', () => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 500);
+    });
+}
+
+// Локальное хранилище
+function saveToStorage() {
+    const data = {
+        lastCheck: state.lastCheck,
+        bypassMode: state.bypassMode
+    };
+    localStorage.setItem('mainos-update-panel', JSON.stringify(data));
+}
+
+function loadFromStorage() {
+    const saved = localStorage.getItem('mainos-update-panel');
+    if (saved) {
+        const data = JSON.parse(saved);
+        state.lastCheck = data.lastCheck ? new Date(data.lastCheck) : null;
+        state.bypassMode = data.bypassMode || false;
+        updateLastCheckDisplay();
+    }
+}
+
+// Обновление времени последней проверки
+function updateLastCheckDisplay() {
+    const lastCheckEl = document.getElementById('lastCheck');
+    if (state.lastCheck) {
+        const minutesAgo = Math.floor((Date.now() - state.lastCheck.getTime()) / 60000);
+        lastCheckEl.textContent = `Last check: ${minutesAgo} minute${minutesAgo === 1 ? '' : 's'} ago`;
+    } else {
+        lastCheckEl.textContent = 'Last check: Never';
+    }
+}
+
+// Клавиатурные сокращения
+document.addEventListener('keydown', (e) => {
+    // Ctrl+U для проверки
+    if (e.ctrlKey && e.key === 'u') {
+        e.preventDefault();
+        simulateUpdateCheck();
+    }
+    // Ctrl+B для bypass
+    if (e.ctrlKey && e.key === 'b') {
+        e.preventDefault();
+        toggleBypass();
+    }
+});
