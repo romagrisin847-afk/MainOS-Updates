@@ -5,9 +5,9 @@
 const CONFIG = {
     currentVersion: "26.7",
     driveFolderId: "1Ny-0ZSp0z1u96j_jwGNfinnpD4AWd3as",
-    googleApiKey: "AIzaSyB1pkjZ-q8c9NmZ1L5GxX9T8BwCv7yWYF4", // Замени на свой ключ
+    googleApiKey: "AIzaSyDmjuc8dYPj4a7O4XFIXJ6f1ZekT1gA5ZA", // Замени на свой ключ
     githubRepo: "romagrisin847-afk/MainOS-Updates",
-    websiteUrl: "https://towerrl.tilda.ws",
+    websiteUrl: "https://towerrl.tilda.ws/version",
     autoCheckInterval: 300000 // 5 минут
 };
 
