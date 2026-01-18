@@ -4,116 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MainOS Update Panel</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center;
+            padding: 20px; font-family: -apple-system, sans-serif; color: white;
+        }
+        .container {
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(40px);
+            border-radius: 30px; padding: 40px; max-width: 500px; width: 100%;
+            border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .title { font-size: 32px; font-weight: 800; text-align: center; margin-bottom: 20px;
+                 background: linear-gradient(90deg, #fff, #a8c7ff); -webkit-background-clip: text;
+                 -webkit-text-fill-color: transparent; }
+        .version { background: rgba(0,122,255,0.2); color: #7bb4ff; padding: 10px 20px;
+                   border-radius: 20px; display: inline-block; margin-bottom: 30px; }
+        .btn { background: linear-gradient(135deg, #007AFF, #5856D6); color: white;
+               border: none; padding: 18px; border-radius: 15px; font-size: 18px;
+               font-weight: bold; width: 100%; margin: 10px 0; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <div class="liquid-bg"></div>
-    
     <div class="container">
-        <div class="glass-panel">
-            <!-- Заголовок -->
-            <div class="header">
-                <div class="title">
-                    <i class="fas fa-robot"></i>
-                    <h1>MainOS Update Panel</h1>
-                </div>
-                <div class="version-badge">
-                    <i class="fas fa-tag"></i>
-                    <span>Version: <strong id="currentVersion">26.7</strong></span>
-                </div>
+        <h1 class="title">MainOS Update Panel</h1>
+        <div class="version">Version: <strong>26.7</strong></div>
+        
+        <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <span>🌐 Tilda Website:</span> <strong>26.9</strong>
             </div>
-
-            <!-- Статус -->
-            <div class="status-card">
-                <div class="status-header">
-                    <div class="status-icon" id="statusIcon">
-                        <i class="fas fa-sync-alt"></i>
-                    </div>
-                    <div class="status-text">
-                        <h3 id="statusTitle">Ready to check</h3>
-                        <p id="statusMessage">System initialized</p>
-                    </div>
-                </div>
-                <div class="progress-container" id="progressContainer" style="display: none;">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-            </div>
-
-            <!-- Информация -->
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <div class="info-content">
-                        <h4>Tilda Website</h4>
-                        <div class="info-value" id="websiteVersion">-</div>
-                        <div class="info-label">Latest version</div>
-                    </div>
-                </div>
-                
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fab fa-google-drive"></i>
-                    </div>
-                    <div class="info-content">
-                        <h4>Google Drive</h4>
-                        <div class="info-value" id="driveVersion">-</div>
-                        <div class="info-label">Current version</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Кнопки -->
-            <div class="buttons-container">
-                <button class="btn btn-primary" id="checkBtn">
-                    <i class="fas fa-search"></i>
-                    Check Updates
-                </button>
-                <button class="btn btn-secondary" id="downloadBtn" disabled>
-                    <i class="fas fa-download"></i>
-                    Download
-                </button>
-            </div>
-
-            <!-- Опции -->
-            <div class="options-grid">
-                <button class="option-btn" id="manualBtn">
-                    <i class="fas fa-keyboard"></i>
-                    Manual
-                </button>
-                <button class="option-btn" id="bypassBtn">
-                    <i class="fas fa-unlock"></i>
-                    Bypass
-                </button>
-                <button class="option-btn" id="folderBtn">
-                    <i class="fas fa-folder-open"></i>
-                    Drive
-                </button>
-                <button class="option-btn" id="logBtn">
-                    <i class="fas fa-clipboard-list"></i>
-                    Log
-                </button>
-            </div>
-
-            <!-- Футер -->
-            <div class="footer">
-                <div class="footer-info">
-                    <span id="lastCheck">Status: Ready</span>
-                    <span class="badge">Liquid Glass v2.1</span>
-                </div>
-                <div class="github-link">
-                    <i class="fab fa-github"></i>
-                    <a href="https://github.com/romagrisin847-afk/MainOS-Updates" target="_blank">GitHub Repo</a>
-                </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>📁 Google Drive:</span> <strong>26.7</strong>
             </div>
         </div>
+        
+        <button class="btn" onclick="checkUpdates()">🔍 Check Updates</button>
+        <button class="btn" onclick="window.open('https://drive.google.com/drive/folders/1Ny-0ZSp0z1u96j_jwGNfinnpD4AWd3as','_blank')">
+            📥 Download
+        </button>
+        
+        <div style="color: rgba(255,255,255,0.5); text-align: center; margin-top: 30px;">
+            Liquid Glass UI • GitHub Pages
+        </div>
     </div>
-
-    <!-- Уведомления -->
-    <div class="notification-container" id="notifications"></div>
-
-    <script src="script.js"></script>
+    
+    <script>
+        function checkUpdates() {
+            alert('Checking updates...');
+            // Здесь будет реальная проверка
+        }
+    </script>
 </body>
 </html>
