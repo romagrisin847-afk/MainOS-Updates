@@ -3,149 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MainOS Update Panel</title>
+    <title>MainOS Update Panel • Liquid Glass</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Эффекты частиц -->
+    <canvas id="particles"></canvas>
     <div class="liquid-bg"></div>
     
+    <!-- Конфетти эффект -->
+    <div id="confetti"></div>
+    
+    <!-- Главный контейнер -->
     <div class="container">
         <div class="glass-panel">
             <!-- Заголовок -->
             <div class="header">
                 <div class="title">
-                    <i class="fas fa-robot"></i>
-                    <h1>MainOS Update Panel</h1>
+                    <div class="logo-icon">
+                        <i class="fas fa-rocket"></i>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <div class="title-text">
+                        <h1>MainOS Update Panel</h1>
+                        <div class="subtitle">Real-time version tracking</div>
+                    </div>
                 </div>
-                <div class="version-badge">
-                    <i class="fas fa-tag"></i>
-                    <span id="currentVersionDisplay">26.7</span>
+                <div class="version-chip" id="versionChip">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Current: <strong id="currentVersion">26.7</strong></span>
                 </div>
             </div>
 
-            <!-- Статус -->
+            <!-- Карта статуса -->
             <div class="status-card">
                 <div class="status-header">
                     <div class="status-icon" id="statusIcon">
-                        <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-satellite"></i>
+                        <div class="pulse-ring"></div>
                     </div>
                     <div class="status-text">
-                        <h3 id="statusTitle">System Ready</h3>
-                        <p id="statusMessage">Click "Check Updates" to start</p>
+                        <h3 id="statusTitle">System Initialized</h3>
+                        <p id="statusMessage">Ready to check real updates</p>
                     </div>
                 </div>
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                        <div class="progress-shine"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
                 </div>
             </div>
 
-            <!-- Информация -->
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fas fa-globe"></i>
+            <!-- Карты данных -->
+            <div class="data-grid">
+                <!-- Tilda Website -->
+                <div class="data-card" id="websiteCard">
+                    <div class="data-header">
+                        <div class="data-icon">
+                            <i class="fas fa-globe"></i>
+                            <div class="data-glow"></div>
+                        </div>
+                        <div class="data-info">
+                            <h4>Tilda Website</h4>
+                            <div class="data-url">towerrl.tilda.ws</div>
+                        </div>
                     </div>
-                    <div class="info-content">
-                        <h4>Tilda Website</h4>
-                        <div class="info-value" id="websiteVersion">-</div>
-                        <div class="info-label" id="websiteStatus">Not checked</div>
+                    <div class="data-value-container">
+                        <div class="data-value" id="websiteVersion">-</div>
+                        <div class="data-status" id="websiteStatus">Waiting...</div>
                     </div>
+                    <div class="data-sparkles"></div>
                 </div>
-                
-                <div class="info-card">
-                    <div class="info-icon">
-                        <i class="fab fa-google-drive"></i>
+
+                <!-- Google Drive -->
+                <div class="data-card" id="driveCard">
+                    <div class="data-header">
+                        <div class="data-icon">
+                            <i class="fab fa-google-drive"></i>
+                            <div class="data-glow"></div>
+                        </div>
+                        <div class="data-info">
+                            <h4>Google Drive</h4>
+                            <div class="data-url">drive.google.com</div>
+                        </div>
                     </div>
-                    <div class="info-content">
-                        <h4>Google Drive</h4>
-                        <div class="info-value" id="driveVersion">-</div>
-                        <div class="info-label" id="driveStatus">Not checked</div>
+                    <div class="data-value-container">
+                        <div class="data-value" id="driveVersion">-</div>
+                        <div class="data-status" id="driveStatus">Waiting...</div>
                     </div>
+                    <div class="data-sparkles"></div>
                 </div>
             </div>
 
             <!-- Результат -->
-            <div class="result-card" id="resultCard" style="display: none;">
-                <div class="result-header">
-                    <i class="fas fa-bell" id="resultIcon"></i>
-                    <h3 id="resultTitle">Update Available</h3>
+            <div class="result-card" id="resultCard">
+                <div class="result-icon" id="resultIcon">
+                    <i class="fas fa-gem"></i>
                 </div>
-                <p id="resultMessage">New version found on Google Drive</p>
-                <button class="btn btn-download" id="realDownloadBtn">
-                    <i class="fas fa-download"></i>
-                    Download Now
+                <div class="result-content">
+                    <h3 id="resultTitle">Real-time Updates</h3>
+                    <p id="resultMessage">Check versions from real sources</p>
+                </div>
+                <div class="result-sparkle"></div>
+            </div>
+
+            <!-- Основные кнопки -->
+            <div class="actions-grid">
+                <button class="action-btn primary-btn" id="checkBtn">
+                    <div class="btn-content">
+                        <i class="fas fa-satellite-dish"></i>
+                        <span>Check Real Updates</span>
+                    </div>
+                    <div class="btn-shine"></div>
+                    <div class="btn-particles"></div>
+                </button>
+                
+                <button class="action-btn secondary-btn" id="downloadBtn" disabled>
+                    <div class="btn-content">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>Background Download</span>
+                    </div>
+                    <div class="btn-shine"></div>
                 </button>
             </div>
 
-            <!-- Кнопки -->
-            <div class="buttons-container">
-                <button class="btn btn-primary" id="checkBtn">
-                    <i class="fas fa-sync-alt"></i>
-                    Check Real Updates
-                </button>
-                <button class="btn btn-secondary" onclick="window.open('https://drive.google.com/drive/folders/1Ny-0ZSp0z1u96j_jwGNfinnpD4AWd3as','_blank')">
+            <!-- Быстрые действия -->
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="openWebsite()" title="Open Tilda Website">
                     <i class="fas fa-external-link-alt"></i>
-                    Open Drive Folder
+                    <span>Website</span>
+                </button>
+                <button class="quick-btn" onclick="openDrive()" title="Open Google Drive">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Drive</span>
+                </button>
+                <button class="quick-btn" onclick="showLog()" title="View System Log">
+                    <i class="fas fa-history"></i>
+                    <span>Log</span>
+                </button>
+                <button class="quick-btn" onclick="showConfig()" title="Settings">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Settings</span>
                 </button>
             </div>
 
-            <!-- Дополнительно -->
-            <div class="options-grid">
-                <button class="option-btn" onclick="manualCheck()">
-                    <i class="fas fa-keyboard"></i>
-                    Manual Check
-                </button>
-                <button class="option-btn" id="bypassBtn" onclick="toggleBypass()">
-                    <i class="fas fa-unlock"></i>
-                    Bypass
-                </button>
-                <button class="option-btn" onclick="showLog()">
-                    <i class="fas fa-clipboard-list"></i>
-                    Log
-                </button>
-                <button class="option-btn" onclick="showConfig()">
-                    <i class="fas fa-cog"></i>
-                    Config
-                </button>
-            </div>
-
-            <!-- Футер -->
-            <div class="footer">
-                <div class="footer-info">
-                    <span id="lastCheck">Last check: Never</span>
-                    <span class="badge">Real Data API</span>
+            <!-- Статистика -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="lastCheckTime">Never checked</span>
                 </div>
-                <div class="github-link">
-                    <i class="fab fa-github"></i>
-                    <a href="https://github.com/romagrisin847-afk/MainOS-Updates" target="_blank">View Source</a>
+                <div class="stat-item">
+                    <i class="fas fa-database"></i>
+                    <span id="updateCount">0 updates found</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Liquid Glass v3.0</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно -->
-    <div class="modal" id="configModal">
-        <div class="modal-content">
-            <h3><i class="fas fa-cog"></i> Configuration</h3>
-            <div class="config-item">
-                <label>Google Drive Folder ID:</label>
-                <input type="text" id="driveFolderId" value="1Ny-0ZSp0z1u96j_jwGNfinnpD4AWd3as">
+    <!-- Модальное окно конфигурации -->
+    <div class="modal-overlay" id="configModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2><i class="fas fa-cogs"></i> Real Data Configuration</h2>
+                <button class="modal-close" onclick="hideConfig()">&times;</button>
             </div>
-            <div class="config-item">
-                <label>Google API Key:</label>
-                <input type="text" id="googleApiKey" placeholder="Enter your Google API key">
+            <div class="modal-content">
+                <div class="config-group">
+                    <label><i class="fas fa-link"></i> Tilda Website URL</label>
+                    <input type="text" id="tildaUrl" value="https://towerrl.tilda.ws" placeholder="https://your-site.tilda.ws">
+                </div>
+                
+                <div class="config-group">
+                    <label><i class="fab fa-google-drive"></i> Google Drive Folder ID</label>
+                    <input type="text" id="driveFolderId" value="1Ny-0ZSp0z1u96j_jwGNfinnpD4AWd3as" placeholder="Folder ID from Drive URL">
+                    <div class="config-hint">Get from drive.google.com/drive/folders/<strong>THIS_IS_FOLDER_ID</strong></div>
+                </div>
+                
+                <div class="config-group">
+                    <label><i class="fas fa-key"></i> Google API Key (Optional)</label>
+                    <input type="password" id="apiKey" placeholder="AIzaSy... for real API access">
+                    <div class="config-hint">Get from <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a></div>
+                </div>
+                
+                <div class="config-group">
+                    <label><i class="fas fa-sync-alt"></i> Auto-check Interval</label>
+                    <select id="checkInterval">
+                        <option value="300000">5 minutes</option>
+                        <option value="600000">10 minutes</option>
+                        <option value="1800000">30 minutes</option>
+                        <option value="3600000">1 hour</option>
+                    </select>
+                </div>
             </div>
-            <div class="config-item">
-                <label>Tilda Website URL:</label>
-                <input type="text" id="tildaUrl" value="https://towerrl.tilda.ws">
-            </div>
-            <div class="modal-buttons">
-                <button class="btn btn-primary" onclick="saveConfig()">Save</button>
-                <button class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="hideConfig()">Cancel</button>
+                <button class="modal-btn primary" onclick="saveConfig()">Save & Apply</button>
             </div>
         </div>
     </div>
+
+    <!-- Уведомления -->
+    <div class="notification-center" id="notifications"></div>
+
+    <!-- Скрытый iframe для скачивания -->
+    <iframe id="downloadFrame" style="display: none;"></iframe>
 
     <script src="script.js"></script>
 </body>
